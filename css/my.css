@@ -2,4 +2,62 @@ html,
 body {
   width: 100%;
   height: 100%;
+  font-size: 16px;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.list {
+  width: 500px;
+  margin: 30px auto;
+  text-align: center;
+  border: 1px solid #092458;
+  -webkit-box-shadow: 0 0 5px #0c57df;
+  -moz-box-shadow: 0 0 5px #0c57df;
+  box-shadow: 0 0 5px #0c57df;
+}
+.list__input-field {
+  width: 90%;
+  padding: 5px 10px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.list__item {
+  padding: 10px;
+  border-bottom: 1px solid rgba(19, 96, 219, 0.58);
+  position: relative;
+  text-align: left;
+}
+.list__item--complete {
+  color: #cccccc;
+}
+.list__item--complete .list__text {
+  text-decoration: line-through;
+}
+.list__item--complete .list__status {
+  color: #00d300;
+}
+.list__item:first-child {
+  border-top: 1px solid rgba(19, 96, 219, 0.58);
+  transition: 0.5s;
+}
+.list__item:last-child {
+  border-bottom: none;
+}
+.list__item:hover {
+  background-color: rgba(12, 85, 221, 0.65);
+}
+.list__item:hover .list__delete {
+  opacity: 1;
+  transition: 1s;
+}
+.list__text {
+  padding: 10px;
+}
+.list__delete {
+  opacity: 0;
+  position: absolute;
+  right: 10px;
 }

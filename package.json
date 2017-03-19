@@ -1,0 +1,22 @@
+{
+  "name": "to_do_list",
+  "version": "1.0.0",
+  "description": "To Do list only VanilaJS and CSS",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mif83/to-do-list.git"
+  },
+  "author": "Yesypenko Dmytro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mif83/to-do-list/issues"
+  },
+  "homepage": "https://github.com/mif83/to-do-list#readme",
+  "dependencies": {
+    "font-awesome": "^4.7.0"
+  }
+}
