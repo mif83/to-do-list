@@ -1,4 +1,14 @@
 /**
  * Created by user on 19.03.17.
  */
-console.log("sss");
+function List(options){
+    var elem = options.elem;
+    
+    
+    
+    elem.onclick = function(event) {
+        if (event.target.closest('.list__item')) {
+            console.log("click");
+        }
+    };
+}
