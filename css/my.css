@@ -18,11 +18,17 @@ ul {
   -moz-box-shadow: 0 0 5px #0c57df;
   box-shadow: 0 0 5px #0c57df;
 }
+.list__active-tasks .list__item--complete {
+  display: none;
+}
 .list__input-field {
   width: 90%;
   padding: 5px 10px;
   font-size: 16px;
   margin-bottom: 20px;
+}
+.list__radio {
+  margin-bottom: 15px;
 }
 .list__item {
   padding: 10px;
@@ -60,4 +66,5 @@ ul {
   opacity: 0;
   position: absolute;
   right: 10px;
+  cursor: pointer;
 }

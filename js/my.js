@@ -23,18 +23,26 @@ function List(options){
    function initList(){
         var h2 = document.createElement("h2"),
             input = document.createElement("input"),
-            ul = document.createElement("ul");
+            ul = document.createElement("ul"),
+            radio = document.createElement("div");
 
         h2.textContent = options.title;
         input.setAttribute("type", "text");
         input.setAttribute("placeholder", "input something");
         input.classList.add("list__input-field");
+        ul.classList.add("list__main");
+        radio.classList.add("list__radio");
+        radio.innerHTML = `<label><input type="radio" name="chekbox" checked value="all"> All tasks</label>
+        <label><input type="radio" name="chekbox" value="active"> Active tasks</label>`;
+
         elem.appendChild(h2);
         elem.appendChild(input);
-        ul.classList.add("list__main");
+        elem.appendChild(radio);
         elem.appendChild(ul);
+
         elem.addEventListener("click", click);
         input.addEventListener("keydown", inputAction);
+        elem.addEventListener("change", changeChekbox);
     }
     /**
      * Draw list element in DOM
@@ -122,6 +130,14 @@ function List(options){
             tasks.push(obj);
             renderItem(obj);
             e.target.value ="";
+        }
+    }
+    function changeChekbox(e){
+        if(e.target.value == "active"){
+            elem.classList.add("list__active-tasks");
+        }
+        if(e.target.value == "all"){
+            elem.classList.remove("list__active-tasks");
         }
     }
     /**

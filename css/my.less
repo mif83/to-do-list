@@ -22,11 +22,17 @@ ul{
   -webkit-box-shadow: 0 0 5px @shadowColor;
   -moz-box-shadow: 0 0 5px @shadowColor;
   box-shadow: 0 0 5px @shadowColor;
+  &__active-tasks .list__item--complete{
+    display: none;
+  }
   &__input-field{
     width: 90%;
     padding: 5px 10px;
     font-size: @font-size;
     margin-bottom: 20px;
+  }
+  &__radio{
+    margin-bottom: 15px;
   }
   &__item{
     padding: 10px;
@@ -66,5 +72,6 @@ ul{
     opacity: 0;
     position: absolute;
     right: 10px;
+    cursor: pointer;
   }
 }
