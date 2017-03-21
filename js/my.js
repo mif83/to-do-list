@@ -2,7 +2,7 @@
  * Created by user on 19.03.17.
  */
 options = {
-    elem: document.getElementsByClassName("list")[0],
+    elem: document.querySelector('.list'),
     title:"To do list"
 };
 /**
@@ -54,13 +54,12 @@ function List(options){
      * }
      */
     function renderItem(obj){
-        var li = document.createElement("li");
-        obj.li = li;
-        li.classList.add("list__item");
-        li.innerHTML = `<i class="fa fa-circle-o list__status" aria-hidden="true"></i>
+        obj.li = document.createElement("li");
+        obj.li.classList.add("list__item");
+        obj.li.innerHTML = `<i class="fa fa-circle-o list__status" aria-hidden="true"></i>
             <span class="list__text">${obj.text}</span>
             <i class="fa fa-trash list__delete" aria-hidden="true"></i>`;
-        elem.querySelector(".list__main").appendChild(li);
+        elem.querySelector(".list__main").appendChild(obj.li);
     }
     /**
      * delete or swith state item list
@@ -95,15 +94,9 @@ function List(options){
     function toggle(item, liElement) {
         var icon = liElement.querySelector(".list__status");
 
-        if(!item.ready){
-            item.ready = true;
-            icon.classList.add("fa-check-circle-o");
-            icon.classList.remove("fa-circle-o");
-        } else {
-            item.ready = false;
-            icon.classList.remove("fa-check-circle-o");
-            icon.classList.add("fa-circle-o");
-        }
+        item.ready = !item.ready;
+        icon.classList.toggle("fa-check-circle-o", item.ready);
+        icon.classList.toggle("fa-circle-o", !item.ready);
         liElement.classList.toggle("list__item--complete");
     }
     /**
@@ -133,12 +126,7 @@ function List(options){
         }
     }
     function changeChekbox(e){
-        if(e.target.value == "active"){
-            elem.classList.add("list__active-tasks");
-        }
-        if(e.target.value == "all"){
-            elem.classList.remove("list__active-tasks");
-        }
+        elem.classList.toggle("list__active-tasks", e.target.value == "active" );
     }
     /**
      *
