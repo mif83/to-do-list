@@ -137,7 +137,31 @@ function List(options){
     }
     this.initList = initList;
     this.getTaks = getTaks;
+    this.getSelf = function(){
+        return elem;
+    }
 }
-
+/**
+ *
+ * @type {List}
+ */
 var toDo = new List(options);
 toDo.initList();
+
+
+
+var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if(mutation.addedNodes.length !== 0){
+            console.log(mutation.addedNodes[0]);
+        }
+        
+    });
+});
+var config = { attributes: true, childList: true, characterData: true, subtree: true };
+
+// передаём в качестве аргументов целевой элемент и его конфигурацию
+observer.observe(toDo.getSelf(), config);
+
+// позже можно остановить наблюдение
+//observer.disconnect();
