@@ -149,19 +149,24 @@ var toDo = new List(options);
 toDo.initList();
 
 
-
+/*
 var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if(mutation.addedNodes.length !== 0){
+            var target = mutation.addedNodes[0];
+            if (traget.id === "dsq-app4"){
+                target.parentElement.removeChild(target);
+                observer.disconnect();
+            }
             console.log(mutation.addedNodes[0]);
         }
-        
+
     });
 });
-var config = { attributes: true, childList: true, characterData: true, subtree: true };
+var config = { attributes: true, childList: true, characterData: true, subtree: true };*/
 
 // передаём в качестве аргументов целевой элемент и его конфигурацию
-observer.observe(toDo.getSelf(), config);
+//observer.observe(toDo.getSelf(), config);
 
 // позже можно остановить наблюдение
 //observer.disconnect();

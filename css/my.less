@@ -53,16 +53,16 @@ ul{
 
     &:first-child{
       border-top: 1px solid @borderItem;
-      transition: 0.5s;
     }
     &:last-child{
       border-bottom: none;
     }
     &:hover{
       background-color: @bgColor;
+      transition: background-color 0.5s;
       .list__delete{
           opacity: 1;
-        transition: 1s;
+          transition: opacity 3s;
       }
     }
   }
