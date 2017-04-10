@@ -46,7 +46,7 @@ function action(req, res){
         });
     }
     if (req.method === "POST"){
-        if (req.url === '/'){
+        if (req.url === '/add'){
             req.on("data", function(clientData){
                 var newTask = JSON.parse(clientData);
 
@@ -60,7 +60,23 @@ function action(req, res){
                 })
             })
         }
-        res.end("ASqweerdf");
+        if (req.url === '/delete'){
+            req.on("data", function(tasksId){
+                var delTask = JSON.parse(tasksId);
+
+                dat1.forEach(function(item,i){
+                   if(item.taskId === delTask.taskId) dat1.splice(i,1);
+                });
+
+                fs.writeFile("test.json", JSON.stringify(dat1, '', 4), function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    console.log(data);
+                })
+            })
+        }
+        res.end(JSON.stringify(dat1));
     }
 }
 
