@@ -135,8 +135,27 @@ function List(options){
     function getTaks(){
         return tasks;
     }
+    function sendRequest(data){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST',"/", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(data));
+
+        xhr.onreadystatechange = function() { // (3)
+            if (xhr.readyState != 4) return;
+
+            if (xhr.status != 200) {
+                alert(xhr.status + ': ' + xhr.statusText);
+            } else {
+                alert(xhr.responseText);
+            }
+
+        }
+
+    }
     this.initList = initList;
     this.getTaks = getTaks;
+    this.sendRequest = sendRequest;
     this.getSelf = function(){
         return elem;
     }
