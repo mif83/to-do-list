@@ -101,6 +101,11 @@ function action(req, res){
                 })
             })
         }
+        if (req.url === '/init'){
+            req.on("data", function(){
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
+        }
     }
 }
 

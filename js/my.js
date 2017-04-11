@@ -1,6 +1,3 @@
-/**
- * Created by user on 19.03.17.
- */
 options = {
     elem: document.querySelector('.list'),
     title:"To do list"
@@ -16,7 +13,6 @@ options = {
  */
 function List(options){
     var elem = options.elem;
- //       tasks = [];
     /**
      * Create title and DOM elements (input, ul)
      */
@@ -43,6 +39,8 @@ function List(options){
         elem.addEventListener("click", click);
         input.addEventListener("keydown", inputAction);
         elem.addEventListener("change", changeChekbox);
+        // get tasks list from server
+        sendRequestInit();
     }
     /**
      * Draw list element in DOM
@@ -50,7 +48,7 @@ function List(options){
      * obj{
      *         {String} text: - some task input by user from text field
      *          {Boolean} ready: - state element in the tasks
-     *          {DOM elemnt} li: - current item element self
+     *          {String} tskId: - unic id list element
      * }
      */
     function renderItem(obj){
@@ -62,8 +60,11 @@ function List(options){
             <i class="fa fa-trash list__delete" aria-hidden="true"></i>`;
         elem.querySelector(".list__main").appendChild(li);
         li.classList.toggle("list__item--complete", obj.ready);
-
     }
+    /**
+     * Render all task list
+     * @param {Array} tasksList - array of tasks from server
+     */
     function renderList(tasksList){
         document.querySelector(".list .list__main").innerHTML = "";
         for(var i = 0; i < tasksList.length; i++){
@@ -78,39 +79,14 @@ function List(options){
         var liElement = e.target.closest(".list__item");
         // delete element from DOM and delete from tasks
         if(e.target.classList.contains("list__delete")){
-            console.log("list__delete");
-            console.log(liElement.dataset.taskId);
             sendRequestDeleteTask(liElement.dataset.taskId);
             return;
         }
         // switch class and elements state
         if(liElement){
-            console.log("toggle");
             sendRequestToggle(liElement.dataset.taskId);
             return;
         }
-    }
-    /**
-     * Togle state in the DOM and in the object
-     * @param {Object} item - one element from task
-     * @param {DOM element} liElement - current elem
-     */
-    function toggle(item, liElement) {
-        var icon = liElement.querySelector(".list__status");
-
-        item.ready = !item.ready;
-        icon.classList.toggle("fa-check-circle-o", item.ready);
-        icon.classList.toggle("fa-circle-o", !item.ready);
-        liElement.classList.toggle("list__item--complete");
-    }
-    /**
-     * delete list element from DOM and tasks array
-     * @param {number} i index i elemenst tasks
-     * @param {DOM element} liElement curent DOM element
-     */
-    function del(i, liElement){
-        tasks.splice(i,1);
-        liElement.parentNode.removeChild(liElement);
     }
     /**
      * save some task from text field to the DOM and tasks array
@@ -128,21 +104,24 @@ function List(options){
             e.target.value ="";
         }
     }
+    /**
+     * Show all task or only not complite tasks
+     * @param {Object} e - event
+     */
     function changeChekbox(e){
         elem.classList.toggle("list__active-tasks", e.target.value == "active" );
     }
     /**
-     *
-     * @returns {Array}
+     * Create AJAX request and send to server, after get answer function launches rendering
+     * @param {Object} data  - aur task ( text: "some text", ready: false, taskId: "23242" )
+     * @param {String} url - part url link to get access to server
+     * @param {String} contentType -  "text/plain", "application/json" ...
      */
-    function getTaks(){
-        return tasks;
-    }
-    function sendRequest(data, url, contentType){
+    function sendRequest(task, url, contentType){
         var xhr = new XMLHttpRequest();
         xhr.open('POST',url, true);
         xhr.setRequestHeader('Content-Type', contentType);
-        xhr.send(JSON.stringify(data));
+        xhr.send(JSON.stringify(task));
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState != 4) return;
@@ -151,17 +130,9 @@ function List(options){
                 console.log(xhr.status + ': ' + xhr.statusText);
             } else {
                 renderList(JSON.parse(xhr.responseText));
-               // return xhr.responseText;
             }
-
         }
 
-    }
-    function findDomElement(taskId){
-        var tasks = document.querySelectorAll(".list .list__main li");
-        for (var i =0; i < tasks.length; i++){
-            if(tasks[i].taskId === taskId) return tasks[i];
-        }
     }
     function sendRequestAdd(newTask){
         sendRequest(newTask, "/add", "application/json");
@@ -176,8 +147,11 @@ function List(options){
     function sendRequestToggle(taskId){
         sendRequest(taskId, "/toggle", "text/plain");
     }
+    function sendRequestInit(){
+        sendRequest("", "/init", "text/plain");
+    }
+
     this.initList = initList;
-    this.getTaks = getTaks;
     this.sendRequestAdd = sendRequestAdd;
     this.sendRequestDeleteTask = sendRequestDeleteTask;
     this.sendRequestDeleteAll = sendRequestDeleteAll;
@@ -185,32 +159,6 @@ function List(options){
         return elem;
     }
 }
-/**
- *
- * @type {List}
- */
+
 var toDo = new List(options);
 toDo.initList();
-
-
-/*
-var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if(mutation.addedNodes.length !== 0){
-            var target = mutation.addedNodes[0];
-            if (traget.id === "dsq-app4"){
-                target.parentElement.removeChild(target);
-                observer.disconnect();
-            }
-            console.log(mutation.addedNodes[0]);
-        }
-
-    });
-});
-var config = { attributes: true, childList: true, characterData: true, subtree: true };*/
-
-// передаём в качестве аргументов целевой элемент и его конфигурацию
-//observer.observe(toDo.getSelf(), config);
-
-// позже можно остановить наблюдение
-//observer.disconnect();
