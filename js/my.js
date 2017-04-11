@@ -15,8 +15,8 @@ options = {
  * @constructor
  */
 function List(options){
-    var elem = options.elem,
-        tasks = [];
+    var elem = options.elem;
+ //       tasks = [];
     /**
      * Create title and DOM elements (input, ul)
      */
@@ -54,12 +54,21 @@ function List(options){
      * }
      */
     function renderItem(obj){
-        obj.li = document.createElement("li");
-        obj.li.classList.add("list__item");
-        obj.li.innerHTML = `<i class="fa fa-circle-o list__status" aria-hidden="true"></i>
+        var li = document.createElement("li");
+        li.classList.add("list__item");
+        li.dataset.taskId = obj.taskId;
+        li.innerHTML = `<i class="fa ${obj.ready? "fa-check-circle-o" : "fa-circle-o"} list__status" aria-hidden="true"></i>
             <span class="list__text">${obj.text}</span>
             <i class="fa fa-trash list__delete" aria-hidden="true"></i>`;
-        elem.querySelector(".list__main").appendChild(obj.li);
+        elem.querySelector(".list__main").appendChild(li);
+        li.classList.toggle("list__item--complete", obj.ready);
+
+    }
+    function renderList(tasksList){
+        document.querySelector(".list .list__main").innerHTML = "";
+        for(var i = 0; i < tasksList.length; i++){
+            renderItem(tasksList[i]);
+        }
     }
     /**
      * delete or swith state item list
@@ -69,20 +78,15 @@ function List(options){
         var liElement = e.target.closest(".list__item");
         // delete element from DOM and delete from tasks
         if(e.target.classList.contains("list__delete")){
-            tasks.forEach(function(item,i){
-                if(item.li === liElement){
-                    del(i, liElement);
-                }
-            });
+            console.log("list__delete");
+            console.log(liElement.dataset.taskId);
+            sendRequestDeleteTask(liElement.dataset.taskId);
             return;
         }
         // switch class and elements state
         if(liElement){
-            tasks.forEach(function(item,i){
-                if(item.li === liElement){
-                   toggle(item, liElement) ;
-                }
-            });
+            console.log("toggle");
+            sendRequestToggle(liElement.dataset.taskId);
             return;
         }
     }
@@ -114,14 +118,13 @@ function List(options){
      */
     function inputAction(e){
         if(e.keyCode == 13){
-            var obj = {
+            var newTask = {
                 text: e.target.value,
                 ready:false,
-                li:null
+                taskId: (""+Math.random()).slice(2)
             };
             if(e.target.value == "") return;
-            tasks.push(obj);
-            renderItem(obj);
+            sendRequestAdd(newTask);
             e.target.value ="";
         }
     }
@@ -145,22 +148,33 @@ function List(options){
             if (xhr.readyState != 4) return;
 
             if (xhr.status != 200) {
-                alert(xhr.status + ': ' + xhr.statusText);
+                console.log(xhr.status + ': ' + xhr.statusText);
             } else {
-                return xhr.responseText;
+                renderList(JSON.parse(xhr.responseText));
+               // return xhr.responseText;
             }
 
         }
 
     }
+    function findDomElement(taskId){
+        var tasks = document.querySelectorAll(".list .list__main li");
+        for (var i =0; i < tasks.length; i++){
+            if(tasks[i].taskId === taskId) return tasks[i];
+        }
+    }
     function sendRequestAdd(newTask){
-        alert(sendRequest(newTask, "/add", "application/json"));
+        sendRequest(newTask, "/add", "application/json");
+
     }
     function sendRequestDeleteTask(taskId){
-        alert(sendRequest(taskId, "/delete", "text/plain"));
+        sendRequest(taskId, "/delete", "text/plain");
     }
     function sendRequestDeleteAll(){
-        alert(sendRequest("", "/delete-all", "text/plain"));
+        sendRequest("", "/delete-all", "text/plain");
+    }
+    function sendRequestToggle(taskId){
+        sendRequest(taskId, "/toggle", "text/plain");
     }
     this.initList = initList;
     this.getTaks = getTaks;

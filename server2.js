@@ -9,7 +9,7 @@ function action(req, res){
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-    console.log(ip.split(":")[3]);
+  //  console.log(ip.split(":")[3]);
     var ansver ={
         "192.168.3.120": "Hello Radmin",
         "192.168.3.168": "By"
@@ -62,7 +62,7 @@ function action(req, res){
         if (req.url === '/delete'){
             req.on("data", function(taskId){
                 taskId = JSON.parse(taskId);
-                console.log(taskId);
+
                 dat1 = dat1.filter(function(item,i){
                    return item.taskId !== taskId;
                 });
@@ -85,6 +85,20 @@ function action(req, res){
                     res.end(JSON.stringify(dat1));
                 })
 
+            })
+        }
+        if (req.url === '/toggle'){
+            req.on("data", function(taskId){
+                taskId = JSON.parse(taskId);
+                dat1.forEach(function(item){
+                    if( item.taskId === taskId ) item.ready = !item.ready;
+                });
+                fs.writeFile("test.json", JSON.stringify(dat1, '', 4), function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
             })
         }
     }
