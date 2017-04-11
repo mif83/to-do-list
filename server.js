@@ -1,47 +1,113 @@
-var http = require('http');
+var http = require("http");
 var fs = require('fs');
+var url = require("url");
 var path = require('path');
+var dat1 = require('./tasksBd.json');
 
-http.createServer(function(request, response) {
-		
-	 console.log(path.join(__dirname, 'users/myusers/file.json'))
-	 //console.log(__dirname);
-	if (request.method === 'GET') {
-		console.log(request.url);
-		
-		fs.readFile(request.url.replace('/', ''), function (err, data) {
-			// readyState === 3
-			response.writeHead(200, {
-				'Content-Type': 'text/html'
-			});
-			
-			response.end(data); 
-		});
-	}
-	
-	if (request.method === 'POST') {
-		if (request.url === '/123213') {
-			// EventEmitter, Sublish-Subscriber, Observer, Mediator,
-			request.on('data', function (clientData) {
-				var newUser = JSON.parse(clientData);
-				console.log(clientData);
-				fs.readFile('users.json', function (err, data) {
-					var users = JSON.parse(data);
-					
-					users.push(newUser);
+function action(req, res){
+    var ip = req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+  //  console.log(ip.split(":")[3]);
+    var ansver ={
+        "192.168.3.120": "Hello Radmin",
+        "192.168.3.168": "By"
 
-					fs.writeFile('users.json', JSON.stringify(users, '', 4), function (err, data) {
-						res.writeHead(200, {'content-type': 'text/plain'});
-						res.write('received upload:\n\n');
-						res.end(sys.inspect({fields: fields, files: files}));
+    };
+    if(ansver[ip.split(":")[3]]){
+        res.end(ansver[ip.split(":")[3]]);
+    }
+    if(req.method === "GET"){
+        var pathname = url.parse(req.url).pathname,
+            extName;
 
-					});
-				});
-			});
-		}
-	}
-		
-  //file.serve(req, res);
-}).listen(8080);
+        if (pathname === "/") pathname = "/index.html";
+        extName = path.extname(req.url).replace('.', '');
 
-console.log('Server running on port 8080');
+
+        fs.exists(pathname.replace('/', ''), function (exists) {
+            fs.readFile(pathname.replace('/', ''), function(err, data) {
+                var types = {
+                    'js': 'text/javascript',
+                    'css': 'text/css',
+                    'html': 'text/html',
+                    'json': 'application/json',
+                    'ico': 'image/x-icon'
+                };
+                if(err){
+                    res.writeHead(404);
+                  //  res.end("<h1>404 Not Found</h1>");
+                    res.end(JSON.stringify(req.headers));
+                }
+                res.writeHead(200, { 'Content-Type': types[extName] });
+                res.end(data);
+            });
+        });
+    }
+    if (req.method === "POST"){
+        if (req.url === '/add'){
+            req.on("data", function(clientData){
+                var newTask = JSON.parse(clientData);
+
+                dat1.push(newTask);
+                fs.writeFile("tasksBd.json", JSON.stringify(dat1, '', 4), function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
+            })
+        }
+        if (req.url === '/delete'){
+            req.on("data", function(taskId){
+                taskId = JSON.parse(taskId);
+
+                dat1 = dat1.filter(function(item,i){
+                   return item.taskId !== taskId;
+                });
+
+                fs.writeFile("tasksBd.json", JSON.stringify(dat1, '', 4), function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
+            })
+        }
+        if (req.url === '/delete-all'){
+            req.on("data", function(){
+                dat1.length = 0;
+                fs.writeFile("tasksBd.json", dat1, function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1));
+                })
+
+            })
+        }
+        if (req.url === '/toggle'){
+            req.on("data", function(taskId){
+                taskId = JSON.parse(taskId);
+                dat1.forEach(function(item){
+                    if( item.taskId === taskId ) item.ready = !item.ready;
+                });
+                fs.writeFile("tasksBd.json", JSON.stringify(dat1, '', 4), function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
+            })
+        }
+        if (req.url === '/init'){
+            req.on("data", function(){
+                    res.end(JSON.stringify(dat1, '', 4));
+                })
+        }
+    }
+}
+
+http.createServer(action).listen(3130);
+console.log("Server runing in 3130");
