@@ -135,27 +135,38 @@ function List(options){
     function getTaks(){
         return tasks;
     }
-    function sendRequest(data){
+    function sendRequest(data, url, contentType){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST',"/add", true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.open('POST',url, true);
+        xhr.setRequestHeader('Content-Type', contentType);
         xhr.send(JSON.stringify(data));
 
-        xhr.onreadystatechange = function() { // (3)
+        xhr.onreadystatechange = function() {
             if (xhr.readyState != 4) return;
 
             if (xhr.status != 200) {
                 alert(xhr.status + ': ' + xhr.statusText);
             } else {
-                alert(xhr.responseText);
+                return xhr.responseText;
             }
 
         }
 
     }
+    function sendRequestAdd(newTask){
+        alert(sendRequest(newTask, "/add", "application/json"));
+    }
+    function sendRequestDeleteTask(taskId){
+        alert(sendRequest(taskId, "/delete", "text/plain"));
+    }
+    function sendRequestDeleteAll(){
+        alert(sendRequest("", "/delete-all", "text/plain"));
+    }
     this.initList = initList;
     this.getTaks = getTaks;
-    this.sendRequest = sendRequest;
+    this.sendRequestAdd = sendRequestAdd;
+    this.sendRequestDeleteTask = sendRequestDeleteTask;
+    this.sendRequestDeleteAll = sendRequestDeleteAll;
     this.getSelf = function(){
         return elem;
     }

@@ -51,32 +51,42 @@ function action(req, res){
                 var newTask = JSON.parse(clientData);
 
                 dat1.push(newTask);
-                console.log(dat1);
                 fs.writeFile("test.json", JSON.stringify(dat1, '', 4), function(err, data){
                     if (err){
                         console.log("error");
                     }
-                    console.log(data);
+                    res.end(JSON.stringify(dat1, '', 4));
                 })
             })
         }
         if (req.url === '/delete'){
-            req.on("data", function(tasksId){
-                var delTask = JSON.parse(tasksId);
-
-                dat1.forEach(function(item,i){
-                   if(item.taskId === delTask.taskId) dat1.splice(i,1);
+            req.on("data", function(taskId){
+                taskId = JSON.parse(taskId);
+                console.log(taskId);
+                dat1 = dat1.filter(function(item,i){
+                   return item.taskId !== taskId;
                 });
 
                 fs.writeFile("test.json", JSON.stringify(dat1, '', 4), function(err, data){
                     if (err){
                         console.log("error");
                     }
-                    console.log(data);
+                    res.end(JSON.stringify(dat1, '', 4));
                 })
             })
         }
-        res.end(JSON.stringify(dat1));
+        if (req.url === '/delete-all'){
+            req.on("data", function(){
+                dat1.length = 0;
+                fs.writeFile("test.json", dat1, function(err, data){
+                    if (err){
+                        console.log("error");
+                    }
+                    res.end(JSON.stringify(dat1));
+                })
+
+            })
+        }
     }
 }
 
